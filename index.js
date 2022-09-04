@@ -3,13 +3,23 @@ const bodyParser = require('body-parser')
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const mongoose = require('mongoose')
-const My_Uri = "mongodb+srv://CaoHuuKhuongDuy:21nhatranG@cluster0.hrxneeb.mongodb.net/fcc-mongodb-and-mongoose?retryWrites=true&w=majority"
-mongoose.connect(My_Uri, { useNewUrlParser: true, useUnifiedTopology: true });
+// const mongoose = require('mongoose')
+// const My_Uri = "mongodb+srv://CaoHuuKhuongDuy:21nhatranG@cluster0.hrxneeb.mongodb.net/fcc-mongodb-and-mongoose?retryWrites=true&w=majority"
+// mongoose.connect(My_Uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
+
+// const LinkSchema = new mongoose.Schema({
+//   url : String
+// })
+// let Url_model = mongoose.model('Url',LinkSchema);
+
+// let url = new Url_model({url : "https://www.facebook.com"})
+// url.save()
+
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -26,16 +36,19 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get('/youtube',function(req, res){
-  res.redirect("https://www.youtube.com/");
+let Url_data = new Map()
+
+app.post('/api/shorturl',function(req, res){
+  let url = req.body.url;
+  // console.log(url);
+  if (!Url_data.has(url)) Url_data.set(url,Url_data.size + 1);
+  let result = {
+    origin_url : url,
+    short_url : Url_data.get(url)
+  }
+  res.send(result);
 })
-// app.get("/hello",function (req,res){
-//   res.send("hello")
-// })
-app.post('/api/shorturl',function (req, res){
-  // console.log(req.body.url)
-  res.send("hello");
-})
+
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
