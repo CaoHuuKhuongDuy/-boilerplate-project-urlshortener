@@ -37,16 +37,45 @@ app.get('/api/hello', function(req, res) {
 });
 
 let Url_data = new Map()
+let Url_index = []
+
+function valid_url(string) {
+  let url;
+  
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;  
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}
 
 app.post('/api/shorturl',function(req, res){
   let url = req.body.url;
-  // console.log(url);
-  if (!Url_data.has(url)) Url_data.set(url,Url_data.size + 1);
+  if (!valid_url(url))
+    {
+      res.send({"error": 'invalid url'})
+      return;
+    }
+  if (!Url_data.has(url)) 
+    {
+      Url_data.set(url,Url_data.size + 1);
+      Url_index.push(url);
+    }
   let result = {
     original_url : url,
     short_url : Url_data.get(url)
   }
   res.send(result);
+})
+
+app.get('/api/shorturl/:number',function (req,res){
+  let number = req.params.number;
+  number = Number(number);
+  if (number == 0) res.send({"error":"Wrong format"});
+  else if (number > Url_data.size) res.send({error : "No short URL found for the given input"})
+  else res.redirect(Url_index[number - 1])
 })
 
 app.listen(port, function() {
