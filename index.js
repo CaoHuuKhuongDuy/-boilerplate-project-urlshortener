@@ -43,7 +43,7 @@ app.post('/api/shorturl',function(req, res){
   // console.log(url);
   if (!Url_data.has(url)) Url_data.set(url,Url_data.size + 1);
   let result = {
-    origin_url : url,
+    original_url : url,
     short_url : Url_data.get(url)
   }
   res.send(result);
